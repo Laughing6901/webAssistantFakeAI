@@ -19,32 +19,66 @@
 </body>
 <script>
 const texts = document.querySelector(".texts");
+let p = document.createElement("p");
+const replay = "replay";
+const boss = "boss";
 
+// time to waiting for speaking
+var time = 0;
+
+// speech to text
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
+
+// text to speak
+var synth = window.speechSynthesis;
+
+// save voices from synth
+let voices =[];
+
+// config speech
 recognition.interimResults = true;
 recognition.lang = 'vi-VI' || 'en-US';
 recognition.continuous = false
 
-var synth = window.speechSynthesis;
-
-
-let p = document.createElement("p");
-
-let speak = async(text) => {
+// speaking function
+let speak = (text) => {
   let utter = new SpeechSynthesisUtterance(text);
-  synth.speak(utter)
+  utter.voice = voices[49];
+  utter.rate = 0.75;
+  synth.speak(utter);
   utter.onerror = (err) => {
     console.error(err)
   }
 }
-let showText = (text) => {
+
+//print text to web
+let showText = function (classes, text) {
   p= document.createElement("p");
-  p.classList.add("replay");
+  p.classList.add(classes);
   p.innerText = text;
   texts.appendChild(p);
 }
-var time = 1000;
+
+let welcome = () => {
+  let firstContent = "Good morning sir.";
+  let secondContent = "How can I help you?";
+  setTimeout(() => {
+    showText(replay,firstContent);
+    speak(firstContent);
+  }, 300);
+  setTimeout(() => {
+    showText(replay,secondContent);
+    speak(secondContent);
+    
+  }, 1800);
+  setTimeout(() => {
+    showText(boss,"...");
+    recognition.start();
+  }, 3200);
+}
+
+// receive sound from user and processing
 recognition.addEventListener("result", (e) => {
   texts.appendChild(p);
   const text = Array.from(e.results)
@@ -55,27 +89,33 @@ recognition.addEventListener("result", (e) => {
   p.innerText = text;  
   if (e.results[0].isFinal) {
     if (text.includes("Xin chào")) {
-      showText("Chào bạn");
-      let replay = "good evening sir. how are you?";
-      speak(replay);
-      console.log(replay.length);
-      time += replay.length *55;
-      console.log(time);
+      let contentSpeak = " how can I help you?";
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      time =1000 + replay.length * 55;
     }
-    if (text.includes("how are you")) {
-      p = document.createElement("p");
-      p.classList.add("replay");
-      p.innerText = "I am fine";
-      texts.appendChild(p);
+    if (text.toLowerCase().includes("hello")) {
+      let contentSpeak = "hello sir.";
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      time =1000 + contentSpeak.length * 55;
     }
     if (
-      text.includes("What's your name") ||
-      text.includes("What is your name")
+      text.toLowerCase().includes("how are you") ||
+      text.includes("khỏe không")) {
+      let contentSpeak = "I'm fine thanks, and you?";
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      time = 1000 + contentSpeak.length * 55
+    }
+    if (
+      text.toLowerCase().includes("what's your name") ||
+      text.toLowerCase().includes("what is your name")
     ) {
-      p = document.createElement("p");
-      p.classList.add("replay");
-      p.innerText = "My Name is Cifar";
-      texts.appendChild(p);
+      let contentSpeak = "My name is Laughing";
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      time = 1000 + contentSpeak.length * 55
     }
     if (text.includes("open my YouTube")) {
       p = document.createElement("p");
@@ -90,6 +130,7 @@ recognition.addEventListener("result", (e) => {
   }
 });
 
+
 recognition.addEventListener("end", () => {
   setTimeout(() => {
     recognition.start();
@@ -98,8 +139,14 @@ recognition.addEventListener("end", () => {
   }, time);
 });
 
-recognition.start();
-
+//get voices
+if (synth.onvoiceschanged !== undefined) {synth.onvoiceschanged = () => {
+  voices = synth.getVoices();
+  }
+}
+setTimeout(() => {
+  welcome();
+}, 500);
 
 </script>
 </html>

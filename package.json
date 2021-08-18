@@ -1,0 +1,24 @@
+{
+  "name": "demospeech",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Laughing6901/webAssistantFakeAI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Laughing6901/webAssistantFakeAI/issues"
+  },
+  "homepage": "https://github.com/Laughing6901/webAssistantFakeAI#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.12"
+  }
+}
