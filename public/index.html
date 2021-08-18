@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="speech.css">
+    <title>Document</title>
+</head>
+<body>
+    <section>
+        <h1>Laughing <br> Assistant</h1>
+        <p>Available In Chrome😎 Only</p>
+        <div class="container">
+          <div class="texts">
+          </div>
+        </div>
+    </section>
+</body>
+<script>
+const texts = document.querySelector(".texts");
+let p = document.createElement("p");
+const replay = "replay";
+const boss = "boss";
+var searchingText= '';
+
+// time to waiting for speaking
+var time = 0;
+
+// speech to text
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+
+// text to speak
+var synth = window.speechSynthesis;
+
+// save voices from synth
+let voices =[];
+
+// config speech
+recognition.interimResults = true;
+recognition.lang =  'en-US';
+recognition.continuous = false
+
+// speaking function
+let speak = (text,bonusTime) => {
+  let utter = new SpeechSynthesisUtterance(text);
+  utter.voice = voices[49];
+  utter.rate = 0.75;
+  synth.speak(utter);
+  utter.onerror = (err) => {
+    console.error(err)
+  }
+  if (bonusTime !== undefined) {
+    time = 1000+bonusTime + text.length * 55;
+  } else {
+    time = 1000+ text.length * 55;
+  }
+}
+
+//print text to web
+let showText = function (classes, text) {
+  p= document.createElement("p");
+  p.classList.add(classes);
+  p.innerText = text;
+  texts.appendChild(p);
+  p= document.createElement("p");
+}
+
+let welcome = () => {
+  let content = ["Good evening sir.", "hello boss!", "hi boss, you look great",]
+  let rand = random(3)-1;
+  let firstContent = content[rand];
+  let secondContent = "How can I help you?";
+  setTimeout(() => {
+    showText(replay,firstContent);
+    speak(firstContent);
+  }, 800);
+  setTimeout(() => {
+    showText(replay,secondContent);
+    speak(secondContent);
+    
+  }, 2000);
+  setTimeout(() => {
+    recognition.start();
+  }, 4000);
+}
+
+//get random content
+let random = (max) => {
+  return Math.floor(Math.random() *max) +1;
+}
+
+//get time 
+let getTime = (method) => {
+  let day = new Date();
+  if (method == "hours") {
+    return day.getHours();
+  }
+  if (method == "minutes") {
+    return day.getMinutes();
+  }
+  if (method == "seconds") {
+    return day.getSeconds();
+  }
+}
+
+
+
+// receive content from user and processing
+recognition.addEventListener("result", (e) => {
+  texts.appendChild(p);
+  const personText = e.results[0][0].transcript;
+  let text = searchingText + personText;
+  p.innerText = personText;  
+
+  if (e.results[0].isFinal) {
+    if (text.toLowerCase().includes("hello")||
+    text.toLowerCase().includes("hey laughing")) {
+      let rand = random(2);
+      console.log(rand);
+      let contentSpeak = rand == 2? "hello sir.": "how can I help you?";
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      return;
+    }
+    if (text.toLowerCase().includes("what time is it")) {
+      let contentSpeak = `it's: ${getTime('hours')}:${getTime('minutes')}:${getTime('seconds')}`;
+      showText(replay, contentSpeak);
+      speak(contentSpeak,2000);
+      return;
+    }
+    if (text.toLowerCase().includes("thanks") ||
+        text.toLowerCase().includes("thank you")) {
+      let rand = random(2);
+      console.log(rand);
+      let contentSpeak = rand == 2? "It's my responsibility": "you're welcome";
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      return;
+    }
+    if (
+      text.includes("open website of MyTeam")) {
+      let contentSpeak = "ok, here is your website";
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      window.open("http://advancediothcmiu.wordpress.com");
+      return;
+    }
+    if (
+      text.toLowerCase().includes("how are you")) {
+      let contentSpeak = "I'm fine thanks, and you?";
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      return;
+    }
+    if (
+      text.toLowerCase().includes("what's your name") ||
+      text.toLowerCase().includes("what is your name")
+    ) {
+      let contentSpeak = "My name is Laughing";
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      return;
+    }
+  
+    if (text.includes("searching on YouTube") || 
+    text.includes ("search on YouTube")) {
+      searchingText = "search YouTube ";
+      let contentSpeak = 'what should I search boss?';
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      return;
+    }
+    if( text.includes("search YouTube")) {
+      searchingText = '';
+      if(personText.includes('cancel')) {
+        console.log('do it');
+        showText(replay, 'ok');
+        speak('ok');
+        return;
+      } else {
+        let contentSpeak = `ok, here is your ${personText} on YouTube`;
+        showText(replay, contentSpeak);
+        speak(contentSpeak);
+        window.open(`https://www.youtube.com/results?search_query=${personText}`);
+        return;
+      }
+    }
+
+    if(text.includes("reload now")) {
+      let contentSpeak = "ok sir, wait a minutes";
+      speak(contentSpeak);
+      setTimeout(() => {
+        location.reload();
+      }, time);
+    }
+
+    if (text.includes("searching on Google") || 
+    text.includes ("search on Google")) {
+      searchingText = "search Google ";
+      let contentSpeak = 'what should I search boss?';
+      showText(replay, contentSpeak);
+      speak(contentSpeak);
+      return;
+    }
+    
+    if( text.includes("search Google")) {
+      searchingText = '';
+      if(personText.includes ('cancel')) {
+        showText(replay, 'ok');
+        speak('ok');
+        return;
+      } else {
+        let contentSpeak = `ok, here is your ${personText} on Google`;
+        showText(replay, contentSpeak);
+        speak(contentSpeak);
+        window.open(`https://www.google.com/search?q=${personText}`);
+      }
+      return;
+    }
+    p = document.createElement("p");
+    speak('try again please sir');
+  }
+});
+
+// when stop recording
+recognition.addEventListener("end", () => {
+  setTimeout(() => {
+    recognition.start();
+    console.log(time);
+    console.log('started');
+    time = 0;
+  }, time);
+});
+
+//get voices from lib
+if (synth.onvoiceschanged !== undefined) {synth.onvoiceschanged = () => {
+  voices = synth.getVoices();
+  }
+}
+setTimeout(() => {
+  welcome();
+}, 500);
+
+</script>
+</html>
