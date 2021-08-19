@@ -113,7 +113,8 @@ recognition.addEventListener("result", (e) => {
   texts.appendChild(p);
   const personText = e.results[0][0].transcript;
   let text = searchingText + personText;
-  p.innerText = personText;  
+  p.innerText = personText;
+ 
 
   if (e.results[0].isFinal) {
     if (text.toLowerCase().includes("hello")||
@@ -221,7 +222,7 @@ recognition.addEventListener("result", (e) => {
       return;
     }
     p = document.createElement("p");
-    speak('try again please sir');
+    speak("sorry I don't understand");
   }
 });
 
