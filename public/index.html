@@ -142,7 +142,9 @@ recognition.addEventListener("result", (e) => {
       return;
     }
     if (
-      text.includes("website of MyTeam")) {
+      text.includes("website of MyTeam") ||
+      text.toLowerCase().includes("website of my team") ||
+      text.toLowerCase().includes("website off my team")) {
       let contentSpeak = "ok, here is your website";
       showText(replay, contentSpeak);
       speak(contentSpeak);
