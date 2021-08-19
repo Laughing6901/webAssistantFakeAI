@@ -196,6 +196,7 @@ recognition.addEventListener("result", (e) => {
       setTimeout(() => {
         location.reload();
       }, time);
+      return;
     }
 
     if (text.includes("searching on Google") || 
